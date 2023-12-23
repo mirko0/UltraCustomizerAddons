@@ -1,0 +1,3 @@
+rootProject.name = 'addons'
+include 'WeatherEvents'
+

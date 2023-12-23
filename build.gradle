@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly files("libs\\UltraCustomizer.jar")
+    compileOnly files("libs\\original.jar")
+    compileOnly files("libs\\patched.jar")
+}
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    dependencies {
+        compileOnly files(project(":").file("libs\\UltraCustomizer.jar"))
+        compileOnly files(project(":").file("libs\\original.jar"))
+        compileOnly files(project(":").file("libs\\patched.jar"))
+    }
+}
+test {
+    useJUnitPlatform()
+}
