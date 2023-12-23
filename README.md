@@ -17,5 +17,7 @@ Show your support
 </h1>
   <p align="center">
    <span>If this project helped you give it a ⭐️!</span>
+   <br />
+   <img src="https://img.shields.io/github/stars/mirko0/UltraCustomizerAddons">
   </p>
 
