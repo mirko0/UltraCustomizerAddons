@@ -1,6 +1,5 @@
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -43,3 +42,4 @@ bin/
 /libs/
 /gradle/
 /.idea/
+/gradle/wrapper/
