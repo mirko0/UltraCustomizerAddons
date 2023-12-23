@@ -8,6 +8,18 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/BossBars" />
+            <option value="$PROJECT_DIR$/Download" />
+            <option value="$PROJECT_DIR$/FlyToggle" />
+            <option value="$PROJECT_DIR$/GamemodeChanger" />
+            <option value="$PROJECT_DIR$/HttpTools" />
+            <option value="$PROJECT_DIR$/PlayerHealth" />
+            <option value="$PROJECT_DIR$/PlayerVelocityUtils" />
+            <option value="$PROJECT_DIR$/PotionApply" />
+            <option value="$PROJECT_DIR$/Randomizer" />
+            <option value="$PROJECT_DIR$/ReadTxtFile" />
+            <option value="$PROJECT_DIR$/ShiftRightClick" />
+            <option value="$PROJECT_DIR$/Votifier" />
             <option value="$PROJECT_DIR$/WeatherEvents" />
           </set>
         </option>
