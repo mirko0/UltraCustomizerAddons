@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.github.mirko0.loadbase'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+

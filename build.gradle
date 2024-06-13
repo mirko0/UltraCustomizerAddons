@@ -28,6 +28,3 @@ subprojects {
         compileOnly files(project(":").file("libs\\patched.jar"))
     }
 }
-test {
-    useJUnitPlatform()
-}

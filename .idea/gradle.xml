@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -13,6 +14,7 @@
             <option value="$PROJECT_DIR$/FlyToggle" />
             <option value="$PROJECT_DIR$/GamemodeChanger" />
             <option value="$PROJECT_DIR$/HttpTools" />
+            <option value="$PROJECT_DIR$/LoadBase" />
             <option value="$PROJECT_DIR$/PlayerHealth" />
             <option value="$PROJECT_DIR$/PlayerVelocityUtils" />
             <option value="$PROJECT_DIR$/PotionApply" />
@@ -21,6 +23,7 @@
             <option value="$PROJECT_DIR$/ShiftRightClick" />
             <option value="$PROJECT_DIR$/Votifier" />
             <option value="$PROJECT_DIR$/WeatherEvents" />
+            <option value="$PROJECT_DIR$/untitled" />
           </set>
         </option>
       </GradleProjectSettings>
