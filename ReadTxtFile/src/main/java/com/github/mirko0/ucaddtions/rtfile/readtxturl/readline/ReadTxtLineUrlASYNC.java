@@ -120,7 +120,7 @@ public class ReadTxtLineUrlASYNC extends Element {
                 this.getOutcomingVariables(elementInfo)[0].register(scriptInstance, new DataRequester() {
                     @Override
                     public Object request() {
-                        return finalLineString;
+                        return finalLineString.replace("\r\n", "\n").replace("\r", "\n");
                     }
                 });
                 this.getConnectors(elementInfo)[0].run(scriptInstance);

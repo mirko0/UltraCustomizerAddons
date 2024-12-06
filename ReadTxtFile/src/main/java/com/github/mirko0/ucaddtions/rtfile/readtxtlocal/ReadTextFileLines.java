@@ -101,14 +101,14 @@ public class ReadTextFileLines extends Element {
 
             int finalLine = (int) line;
             Bukkit.getScheduler().runTaskAsynchronously(plugin.getBootstrap(), () -> {
-                List<String> fileTxt = FileUtils.readLines(new File(path), Charset.defaultCharset());
 
                 try {
+                    List<String> fileTxt = FileUtils.readLines(new File(path), Charset.defaultCharset());
                     String fileTxtString = fileTxt.get(finalLine);
                     this.getOutcomingVariables(elementInfo)[0].register(scriptInstance, new DataRequester() {
                         @Override
                         public Object request() {
-                            return fileTxtString;
+                            return fileTxtString.replace("\r\n", "\n").replace("\r", "\n");
                         }
                     });
                     this.getConnectors(elementInfo)[0].run(scriptInstance);

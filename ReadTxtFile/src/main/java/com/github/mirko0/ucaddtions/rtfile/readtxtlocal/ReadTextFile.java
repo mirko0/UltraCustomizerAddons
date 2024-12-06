@@ -2,13 +2,13 @@ package com.github.mirko0.ucaddtions.rtfile.readtxtlocal;
 
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
-import me.TechsCode.UltraCustomizer.dependencies.commons.io.FileUtils;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataType;
 import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class ReadTextFile extends Element {
     public ReadTextFile(UltraCustomizer ultraCustomizer) {
@@ -90,13 +90,13 @@ public class ReadTextFile extends Element {
         final String path = (String) this.getArguments(elementInfo)[0].getValue(scriptInstance);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin.getBootstrap(), () ->{
-            String fileTxt = FileUtils.readFileToString(new File(path), Charset.defaultCharset());
-
             try {
+                File file = new File(path);
+                String fileTXT = Files.readString(file.toPath()).replace("\r\n", "\n").replace("\r", "\n");
                 this.getOutcomingVariables(elementInfo)[0].register(scriptInstance, new DataRequester() {
                     @Override
                     public Object request() {
-                        return fileTxt;
+                        return fileTXT;
                     }
                 });
                 this.getConnectors(elementInfo)[0].run(scriptInstance);
