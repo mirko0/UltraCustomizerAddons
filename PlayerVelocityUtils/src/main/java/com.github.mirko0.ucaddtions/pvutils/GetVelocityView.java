@@ -50,8 +50,8 @@ public class GetVelocityView extends Element {
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("xAxis", "X Axis", DataType.NUMBER, elementInfo),
-                new OutcomingVariable("zAxis", "Z Axis", DataType.NUMBER, elementInfo)
+                new OutcomingVariable("xAxis", "X Axis", DataType.DOUBLE, elementInfo),
+                new OutcomingVariable("zAxis", "Z Axis", DataType.DOUBLE, elementInfo)
         };
     }
 
@@ -67,8 +67,8 @@ public class GetVelocityView extends Element {
 
         Vector direction = player.getLocation().getDirection().multiply(power);
 
-        long x = new Double(direction.getX()).longValue();
-        long z = new Double(direction.getZ()).longValue();
+        double x = direction.getX();
+        double z = direction.getZ();
 
         this.getOutcomingVariables(elementInfo)[0].register(scriptInstance, new DataRequester() {
             @Override
