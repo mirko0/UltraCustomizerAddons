@@ -7,16 +7,29 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
 }
 
 dependencies {
     compileOnly files("libs\\UltraCustomizer.jar")
     compileOnly files("libs\\original.jar")
     compileOnly files("libs\\patched.jar")
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
 }
 allprojects {
     repositories {
         mavenCentral()
+        maven {
+            name = 'spigotmc-repo'
+            url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+        }
     }
 }
 
@@ -24,7 +37,13 @@ subprojects {
     apply plugin: 'java'
     dependencies {
         compileOnly files(project(":").file("libs\\UltraCustomizer.jar"))
-        compileOnly files(project(":").file("libs\\original.jar"))
-        compileOnly files(project(":").file("libs\\patched.jar"))
+//        compileOnly files(project(":").file("libs\\original.jar"))
+//        compileOnly files(project(":").file("libs\\patched.jar"))
+        compileOnly 'org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT'
+        compileOnly 'org.projectlombok:lombok:1.18.36'
+        annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+        testCompileOnly 'org.projectlombok:lombok:1.18.36'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
     }
 }
