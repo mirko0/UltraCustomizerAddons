@@ -1,28 +1,25 @@
-package com.github.mirko0.discordio.customizer.elements.user;
+package com.github.mirko0.discordio.customizer.elements.message;
 
 import com.github.mirko0.discordio.datatypes.QDataTypes;
-import com.github.mirko0.discordio.datatypes.specifications.UserSpecification;
-import com.github.mirko0.discordio.datatypes.specifications.OffsetDateTimeSpecification;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataType;
-import net.dv8tion.jda.api.entities.User;
-import org.checkerframework.checker.units.qual.C;
+import net.dv8tion.jda.api.entities.Message;
 
-public class GetUserData extends Element {
-    public GetUserData(UltraCustomizer plugin) {
+public class GetMessageData extends Element {
+    public GetMessageData(UltraCustomizer plugin) {
         super(plugin);
     }
 
     @Override
     public String getName() {
-        return "[D] Get Discord User Data";
+        return "[D] Get Discord Message Data";
     }
 
     @Override
     public String getInternalName() {
-        return "discordio-user-data";
+        return "discordio-message-data";
     }
 
     @Override
@@ -32,28 +29,30 @@ public class GetUserData extends Element {
 
     @Override
     public XMaterial getMaterial() {
-        return XMaterial.PLAYER_HEAD;
+        return XMaterial.BOOK;
     }
 
     @Override
     public String[] getDescription() {
-        return new String[]{"Returns data from discord user.", "Used for retrieving id, name..."};
+        return new String[]{"Returns data from discord message.", "Used for retrieving content, author..."};
     }
 
     @Override
     public Argument[] getArguments(ElementInfo elementInfo) {
         return new Argument[]{
-                new Argument("user", "Discord User", QDataTypes.DISCORD_USER, elementInfo)
+                new Argument("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
         };
     }
 
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("id", "Discord Id", DataType.STRING, elementInfo),
-                new OutcomingVariable("username", "Discord Username", DataType.STRING, elementInfo),
-                new OutcomingVariable("effectiveName", "Discord Effective Name", DataType.STRING, elementInfo),
-                new OutcomingVariable("mention", "Discord User Mention", DataType.STRING, elementInfo),
+                new OutcomingVariable("id", "Message Id", DataType.STRING, elementInfo),
+                new OutcomingVariable("author", "Author", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("contentRaw", "Raw Content", DataType.STRING, elementInfo),
+                new OutcomingVariable("contentDisplay", "Display Content", DataType.STRING, elementInfo),
+                new OutcomingVariable("contentStripped", "Stripped Content", DataType.STRING, elementInfo),
+                new OutcomingVariable("jumpUrl", "Jump URL", DataType.STRING, elementInfo),
                 new OutcomingVariable("timeCreated", "Account Creation Date", QDataTypes.OFFSET_DATE_TIME, elementInfo)
         };
     }
@@ -65,39 +64,50 @@ public class GetUserData extends Element {
 
     @Override
     public void run(ElementInfo elementInfo, ScriptInstance scriptInstance) {
-        User user = (User) this.getArguments(elementInfo)[0].getValue(scriptInstance);
+        Message message = (Message) this.getArguments(elementInfo)[0].getValue(scriptInstance);
 
         this.getOutcomingVariables(elementInfo)[0].register(scriptInstance, new DataRequester() {
             @Override
             public Object request() {
-                return user.getId();
+                return message.getId();
             }
         });
         this.getOutcomingVariables(elementInfo)[1].register(scriptInstance, new DataRequester() {
             @Override
             public Object request() {
-                return user.getName();
+                return message.getAuthor();
             }
         });
         this.getOutcomingVariables(elementInfo)[2].register(scriptInstance, new DataRequester() {
             @Override
             public Object request() {
-                return user.getEffectiveName();
+                return message.getContentRaw();
             }
         });
         this.getOutcomingVariables(elementInfo)[3].register(scriptInstance, new DataRequester() {
             @Override
             public Object request() {
-                return user.getAsMention();
+                return message.getContentDisplay();
             }
         });
         this.getOutcomingVariables(elementInfo)[4].register(scriptInstance, new DataRequester() {
             @Override
             public Object request() {
-                return user.getTimeCreated();
+                return message.getContentStripped();
             }
         });
-
+        this.getOutcomingVariables(elementInfo)[5].register(scriptInstance, new DataRequester() {
+            @Override
+            public Object request() {
+                return message.getJumpUrl();
+            }
+        });
+        this.getOutcomingVariables(elementInfo)[6].register(scriptInstance, new DataRequester() {
+            @Override
+            public Object request() {
+                return message.getTimeCreated();
+            }
+        });
         this.getConnectors(elementInfo)[0].run(scriptInstance);
     }
 }

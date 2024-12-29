@@ -40,7 +40,7 @@ public class ReceiveRandomDataType extends Element {
     @Override
     public Argument[] getArguments(ElementInfo elementInfo) {
         return new Argument[]{
-                new Argument("data", "Data", DataType.getCustomDataType("testdata"), elementInfo)
+                new Argument("data", "Data", elementInfo, DataType.getCustomDataType("testdata"))
         };
     }
 

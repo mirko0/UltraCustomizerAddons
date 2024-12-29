@@ -9,11 +9,15 @@ import me.TechsCode.UltraCustomizer.scriptSystem.objects.OutcomingVariable;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.ScriptInstance;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataTypeSpecification;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 import org.bukkit.entity.Player;
 
 public class GuildSpecification extends DataTypeSpecification {
     private static final Phrase GET_PHRASE = Phrase.create("GuildSpecificaiton.title", "Select Discord Server");
+
+    @Override
+    public String getName() {
+        return "Discord Server";
+    }
 
     @Override
     public String getCreatePhrase() {
@@ -44,12 +48,12 @@ public class GuildSpecification extends DataTypeSpecification {
     @Override
     public String serialize(Object object) {
         Guild casted = (Guild) object;
-        return AddonMain.instance.getReferenceManager().addReference(casted);
+        return casted.getId();
     }
 
     @Override
     public Object deserialize(String data, Folder folder) {
-        return AddonMain.instance.getReferenceManager().getReference(data);
+        return AddonMain.instance.getDiscordBot().getJda().getGuildById(data);
     }
 
 

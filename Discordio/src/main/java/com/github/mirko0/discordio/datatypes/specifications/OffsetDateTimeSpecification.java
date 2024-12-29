@@ -20,6 +20,11 @@ public class OffsetDateTimeSpecification extends DataTypeSpecification {
     private static final Phrase GET_PHRASE = Phrase.create(PREFIX + ".title", "Select Date Time");
 
     @Override
+    public String getName() {
+        return "OffsetDateTime";
+    }
+
+    @Override
     public String getCreatePhrase() {
         return GET_PHRASE.get();
     }

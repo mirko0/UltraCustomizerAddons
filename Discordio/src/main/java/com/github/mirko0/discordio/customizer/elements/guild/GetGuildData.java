@@ -1,14 +1,11 @@
 package com.github.mirko0.discordio.customizer.elements.guild;
 
-import com.github.mirko0.discordio.AddonMain;
 import com.github.mirko0.discordio.datatypes.QDataTypes;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.time.OffsetDateTime;
 

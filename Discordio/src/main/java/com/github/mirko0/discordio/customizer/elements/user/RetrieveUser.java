@@ -2,6 +2,7 @@ package com.github.mirko0.discordio.customizer.elements.user;
 
 import com.github.mirko0.discordio.AddonMain;
 import com.github.mirko0.discordio.datatypes.QDataTypes;
+import com.github.mirko0.discordio.datatypes.specifications.UserSpecification;
 import com.github.mirko0.discordio.dbot.BotMain;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;

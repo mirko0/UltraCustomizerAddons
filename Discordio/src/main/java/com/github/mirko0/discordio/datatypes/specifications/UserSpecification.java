@@ -11,8 +11,13 @@ import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataTypeSpeci
 import net.dv8tion.jda.api.entities.User;
 import org.bukkit.entity.Player;
 
-public class DiscordUserSpecification extends DataTypeSpecification {
-    private static final Phrase GET_PHRASE = Phrase.create("DiscordUserSpecificaiton.title", "Select Discord user");
+public class UserSpecification extends DataTypeSpecification {
+    private static final Phrase GET_PHRASE = Phrase.create("DiscordUserSpecification.title", "Select Discord user");
+
+    @Override
+    public String getName() {
+        return "User";
+    }
 
     @Override
     public String getCreatePhrase() {

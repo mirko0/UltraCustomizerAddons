@@ -1,12 +1,10 @@
 package com.github.mirko0.discordio.customizer.constructors;
 
 import com.github.mirko0.discordio.datatypes.QDataTypes;
-import com.github.mirko0.discordio.events.discord.DiscordMessageEvent;
 import com.github.mirko0.discordio.events.discord.DiscordPrivateMessageEvent;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
-import me.TechsCode.UltraCustomizer.scriptSystem.objects.datatypes.DataType;
 import org.bukkit.event.EventHandler;
 
 public class PrivateMessageConstructor extends Constructor {
@@ -48,7 +46,7 @@ public class PrivateMessageConstructor extends Constructor {
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
                 new OutcomingVariable("user", "Discord User", QDataTypes.DISCORD_USER, elementInfo),
-                new OutcomingVariable("text", "Text", DataType.STRING, elementInfo),
+                new OutcomingVariable("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
         };
     }
 
@@ -63,7 +61,7 @@ public class PrivateMessageConstructor extends Constructor {
             });
             getOutcomingVariables(elementInfo)[1].register(instance, new DataRequester() {
                 public Object request() {
-                    return event.getDiscordEvent().getMessage().getContentDisplay();
+                    return event.getDiscordEvent().getMessage();
                 }
             });
             return instance;

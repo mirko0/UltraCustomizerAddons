@@ -51,7 +51,7 @@ public class GetRandomDataTypeData extends Element {
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("data", "Data", DataType.getCustomDataType("testdata"), elementInfo)
+                new OutcomingVariable("data", "Data", elementInfo, DataType.getCustomDataType("testdata"))
         };
     }
 

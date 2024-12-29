@@ -11,6 +11,7 @@ import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.gui.Overview;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
@@ -56,7 +57,9 @@ public class AddonMain implements Listener {
 
     private void onLoad() {
         setupSettingsFile();
-        this.discordBot = new BotMain(settings);
+        Bukkit.getScheduler().runTaskAsynchronously(UltraCustomizer.getInstance().getBootstrap(), () -> {
+            this.discordBot = new BotMain(settings);
+        });
         eventRegistry = new EventRegistry();
         eventRegistry.registerEvents(instance);
 

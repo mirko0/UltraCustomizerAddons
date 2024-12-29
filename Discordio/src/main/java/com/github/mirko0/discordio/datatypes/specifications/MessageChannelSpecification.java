@@ -18,6 +18,11 @@ public class MessageChannelSpecification extends DataTypeSpecification {
     private static final Phrase GET_PHRASE = Phrase.create(PREFIX + ".title", "Select Message Channel");
 
     @Override
+    public String getName() {
+        return "Message Channel";
+    }
+
+    @Override
     public String getCreatePhrase() {
         return GET_PHRASE.get();
     }
