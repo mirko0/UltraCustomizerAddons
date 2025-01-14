@@ -289,22 +289,22 @@ public class RegionsManager {
         html = html.replace("{regionName}", region.getName());
 
         StringBuilder info = new StringBuilder();
-        info.append("Blocks: " + selection.getBlockSize() + "\n");
+        info.append("Blocks: " + selection.getBlockSize() + "<br/>");
         XYZ center = selection.getCenter();
-        info.append("Center: " + center.getX() + "x " + center.getY() + "y " + center.getZ() + "z");
+        info.append("Center: " + center.getX() + "x " + center.getY() + "y " + center.getZ() + "z<br/>");
         if (selection instanceof SphereSelection sec) {
             info.append("Radius: " + sec.getRadius());
         }
         if (selection instanceof CuboidSelection sec) {
             XYZ a = sec.getA();
             XYZ b = sec.getB();
-            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z\n");
+            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z<br/>");
             info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
         }
         if (selection instanceof ExpandVertSelection sec) {
             XYZ a = sec.getA();
             XYZ b = sec.getB();
-            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z\n");
+            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z<br/>");
             info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
         }
         html = html.replace("{info}", info);
