@@ -1,4 +1,4 @@
-rootProject.name = 'addons'
+rootProject.name = 'UltraAddons'
 include 'WeatherEvents'
 include 'Votifier'
 include 'ShiftRightClick'
