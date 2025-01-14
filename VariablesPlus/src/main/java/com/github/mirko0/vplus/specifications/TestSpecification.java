@@ -13,6 +13,11 @@ public class TestSpecification extends DataTypeSpecification {
     private static final Phrase GET_PHRASE = Phrase.create("TestSpecification.title", "Select Test");
 
     @Override
+    public String getName() {
+        return "Test";
+    }
+
+    @Override
     public String getCreatePhrase() {
         return GET_PHRASE.get();
     }
