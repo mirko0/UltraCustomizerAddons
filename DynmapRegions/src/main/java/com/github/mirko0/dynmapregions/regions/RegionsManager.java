@@ -87,9 +87,14 @@ public class RegionsManager {
         }
     }
 
+    public String regionId(Region region, Selection selection) {
+        XYZ center = selection.getCenter();
+        return "Region_" + region.getUuid() +"_" + center.getX()+center.getY()+center.getZ()+selection.getBlockSize();
+    }
+
     public void cuboidMarker(World world, Region region, Selection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = "Region_" + region.getUuid();
+        final String markerId = regionId(region, selection);
         final String worldName = world.getName();
         XYZ a = null;
         XYZ b = null;
@@ -133,7 +138,7 @@ public class RegionsManager {
 
     public void circleMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = "Region_" + region.getUuid();
+        final String markerId = regionId(region, selection);
         final String worldName = world.getName();
         CircleMarker found = markerSet.findCircleMarker(markerId);
         CircleMarker marker = found != null ? found : markerSet.createCircleMarker(markerId, region.getName(), false, worldName, selection.getCenter().getX(), selection.getCenter().getY(), selection.getCenter().getZ(), selection.getRadius() + 1.0, selection.getRadius() + 1.0, false);
@@ -151,7 +156,7 @@ public class RegionsManager {
 
     public void sphereMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = "Region_" + region.getUuid();
+        final String markerId = regionId(region, selection);
         final String worldName = world.getName();
         final int latSegments = 23; // Number of horizontal slices (latitude)
         final int lonSegments = 30; // Number of vertical slices (longitude)
