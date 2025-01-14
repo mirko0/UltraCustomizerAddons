@@ -21,21 +21,24 @@ import java.util.stream.Collectors;
 
 public class RegionsManager {
 
-    private final AddonMain instance;
     private final BotSettings settings;
     @Getter
     private MarkerSet markerSet;
 
 
     public RegionsManager(AddonMain addonMain) {
-        this.instance = addonMain;
         this.settings = addonMain.getSettings();
         String layerName = settings.getLayerName();
 
         DynmapAPI dynmapAPI = (DynmapAPI) Bukkit.getServer().getPluginManager().getPlugin("dynmap");
-        markerSet = dynmapAPI.getMarkerAPI().getMarkerSet("ultraregions.markerset");
+        if (dynmapAPI == null) {
+            AddonMain.log("Unable to retrieve dynmapAPI. Addon shutting down.");
+            return;
+        }
+        MarkerAPI markerAPI = dynmapAPI.getMarkerAPI();
+        markerSet = markerAPI.getMarkerSet("ultraregions.markerset");
         if (markerSet == null) {
-            markerSet = dynmapAPI.getMarkerAPI().createMarkerSet("ultraregions.markerset", layerName, null, false);
+            markerSet = markerAPI.createMarkerSet("ultraregions.markerset", layerName, null, false);
         }else {
             markerSet.setMarkerSetLabel(layerName);
         }
@@ -43,6 +46,7 @@ public class RegionsManager {
         markerSet.setHideByDefault(false);
         start();
     }
+
     private BukkitTask updateTask;
 
     public void start() {
@@ -89,7 +93,7 @@ public class RegionsManager {
 
     public String regionId(Region region, Selection selection) {
         XYZ center = selection.getCenter();
-        return "Region_" + region.getUuid() +"_" + center.getX()+center.getY()+center.getZ()+selection.getBlockSize();
+        return "Region_" + region.getUuid() + "_" + center.getX() + center.getY() + center.getZ() + selection.getBlockSize();
     }
 
     public void cuboidMarker(World world, Region region, Selection selection) {
@@ -158,13 +162,11 @@ public class RegionsManager {
         if (region.getName().equals("Global")) return;
         final String markerId = regionId(region, selection);
         final String worldName = world.getName();
-        final int latSegments = 23; // Number of horizontal slices (latitude)
-        final int lonSegments = 30; // Number of vertical slices (longitude)
         final double radius = selection.getRadius();
         final double centerX = selection.getCenter().getX();
         final double centerY = selection.getCenter().getY();
         final double centerZ = selection.getCenter().getZ();
-        CornerLocations calculation = calculateLocations(latSegments, lonSegments, centerX, centerY, centerZ, radius);
+        CornerLocations calculation = calculateLocations(centerX, centerY, centerZ, radius);
         PolyLineMarker found = markerSet.findPolyLineMarker(markerId);
         PolyLineMarker marker = found != null ? found : markerSet.createPolyLineMarker(markerId, region.getName(), false, worldName, calculation.x, calculation.y, calculation.z, false);
         if (marker == null) {
@@ -181,7 +183,9 @@ public class RegionsManager {
     private record CornerLocations(double[] x, double[] y, double[] z) {
     }
 
-    private CornerLocations calculateLocations(int latSegments, int lonSegments, double centerX, double centerY, double centerZ, double radius) {
+    private CornerLocations calculateLocations(double centerX, double centerY, double centerZ, double radius) {
+        final int latSegments = 23; // Number of horizontal slices (latitude)
+        final int lonSegments = 30; // Number of vertical slices (longitude)
         // Lists to hold combined coordinates for all lines
         List<Double> allX = new ArrayList<>();
         List<Double> allY = new ArrayList<>();
@@ -289,23 +293,23 @@ public class RegionsManager {
         html = html.replace("{regionName}", region.getName());
 
         StringBuilder info = new StringBuilder();
-        info.append("Blocks: " + selection.getBlockSize() + "<br/>");
+        info.append("Blocks: ").append(selection.getBlockSize()).append("<br/>");
         XYZ center = selection.getCenter();
-        info.append("Center: " + center.getX() + "x " + center.getY() + "y " + center.getZ() + "z<br/>");
+        info.append("Center: ").append(center.getX()).append("x ").append(center.getY()).append("y ").append(center.getZ()).append("z<br/>");
         if (selection instanceof SphereSelection sec) {
-            info.append("Radius: " + sec.getRadius());
+            info.append("Radius: ").append(sec.getRadius());
         }
         if (selection instanceof CuboidSelection sec) {
             XYZ a = sec.getA();
             XYZ b = sec.getB();
-            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z<br/>");
-            info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
+            info.append("XYZ 1: ").append(a.getX()).append("x ").append(a.getY()).append("y ").append(a.getZ()).append("z<br/>");
+            info.append("XYZ 2: ").append(b.getX()).append("x ").append(b.getY()).append("y ").append(b.getZ()).append("z");
         }
         if (selection instanceof ExpandVertSelection sec) {
             XYZ a = sec.getA();
             XYZ b = sec.getB();
-            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z<br/>");
-            info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
+            info.append("XYZ 1: ").append(a.getX()).append("x ").append(a.getY()).append("y ").append(a.getZ()).append("z<br/>");
+            info.append("XYZ 2: ").append(b.getX()).append("x ").append(b.getY()).append("y ").append(b.getZ()).append("z");
         }
         html = html.replace("{info}", info);
         return html;
