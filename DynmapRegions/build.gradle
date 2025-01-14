@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-dev'
+
+repositories {
+    mavenCentral()
+    maven { url = "https://repo.mikeprimm.com/" }
+}
+
+dependencies {
+    compileOnly files(project(":").file("libs\\UltraRegions-1.10.5.jar"))
+    compileOnly "us.dynmap:DynmapCoreAPI:3.7-beta-6"
+    compileOnly "us.dynmap:dynmap-api:3.7-beta-6"
+}
+
+test {
+    useJUnitPlatform()
+}

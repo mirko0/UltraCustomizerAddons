@@ -16,4 +16,5 @@ include 'untitled'
 include 'LoadBase'
 include 'Discordio'
 include 'VariablesPlus'
+include 'DynmapRegions'
 
