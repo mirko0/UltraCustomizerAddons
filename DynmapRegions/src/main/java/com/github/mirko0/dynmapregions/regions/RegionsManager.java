@@ -1,6 +1,5 @@
 package com.github.mirko0.dynmapregions.regions;
 
-
 import com.github.mirko0.dynmapregions.AddonMain;
 import com.github.mirko0.dynmapregions.BotSettings;
 import com.github.mirko0.dynmapregions.ColorUtil;
@@ -13,82 +12,56 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.dynmap.DynmapAPI;
 import org.dynmap.markers.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RegionsManager {
 
     private final AddonMain instance;
     private final BotSettings settings;
-    private boolean stop;
-
     @Getter
     private MarkerSet markerSet;
 
-    @Getter
-    private Map<String, AreaMarker> allRegionsCuboid = new HashMap<>();
-    @Getter
-    private Map<String, CircleMarker> allRegionsSphere = new HashMap<>();
-    @Getter
-    private Map<String, PolyLineMarker> allRegionsPolyline = new HashMap<>();
 
     public RegionsManager(AddonMain addonMain) {
         this.instance = addonMain;
         this.settings = addonMain.getSettings();
-        setupMarkerSet();
-    }
+        String layerName = settings.getLayerName();
 
-    public void setupMarkerSet() {
         DynmapAPI dynmapAPI = (DynmapAPI) Bukkit.getServer().getPluginManager().getPlugin("dynmap");
-
         markerSet = dynmapAPI.getMarkerAPI().getMarkerSet("ultraregions.markerset");
-
-        final String layerName = settings.getLayerName();
         if (markerSet == null) {
             markerSet = dynmapAPI.getMarkerAPI().createMarkerSet("ultraregions.markerset", layerName, null, false);
         }else {
             markerSet.setMarkerSetLabel(layerName);
         }
-
         markerSet.setLayerPriority(10);
         markerSet.setHideByDefault(false);
+        start();
     }
+    private BukkitTask updateTask;
 
     public void start() {
-        new BukkitRunnable() {
+        updateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                if (stop) {
-                    stop = false;
-                    this.cancel();
-                }
                 update();
             }
-        }.runTaskTimer(UltraRegions.getInstance().getBootstrap(), 20L, settings.getRefreshTimeInMinutes());
+        }.runTaskTimerAsynchronously(UltraRegions.getInstance().getBootstrap(), 20L, settings.getRefreshTimeInMinutes());
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
     public void stop() {
-        this.stop = true;
-    }
-
-    public void stopThenStart() {
-        stop();
-        start();
+        AddonMain.log("Shutting Down Update Task");
+        if (updateTask != null && !updateTask.isCancelled()) updateTask.cancel();
     }
 
     public void update() {
-        Map<String, AreaMarker> newRegionsCuboid = new HashMap<>();
-        Map<String, CircleMarker> newRegionsSphere = new HashMap<>();
-        Map<String, PolyLineMarker> newRegionsPolyline = new HashMap<>();
-
         HashMap<World, Region[]> regions = UltraRegions.getAPI().getWorlds().get().stream().collect(Collectors.toMap(ManagedWorld::getBukkitWorld, ManagedWorld::getRegions, (a, b) -> b, HashMap::new));
-
         if (!regions.isEmpty()) {
             for (Map.Entry<World, Region[]> r : regions.entrySet()) {
                 for (Region region : r.getValue()) {
@@ -97,33 +70,25 @@ public class RegionsManager {
                     if (region.getName().equals("Global")) continue;
                     for (Object selection : region.getSelectionList().getList()) {
                         if (selection instanceof CuboidSelection found) {
-                            createRegionMarkerCuboid(r.getKey(), region, newRegionsCuboid, found);
+                            // CUBE REGIONS
+                            cuboidMarker(r.getKey(), region, found);
                         }else if (selection instanceof SphereSelection found) {
-                            if (settings.isUse3D()) createRegionMarkerSphere(r.getKey(), region, newRegionsPolyline, found);
-                            else createRegionMarkerCircle(r.getKey(), region, newRegionsSphere, found);
+                            // SPHERE REGIONS
+                            if (settings.isUse3D())
+                                sphereMarker(r.getKey(), region, found);
+                            else circleMarker(r.getKey(), region, found);
                         }else if (selection instanceof ExpandVertSelection found) {
-                            createRegionMarkerCuboid(r.getKey(), region, newRegionsCuboid, found);
+                            // VERTICAL REGIONS
+                            cuboidMarker(r.getKey(), region, found);
                         }
                     }
                 }
             }
         }
-
-        allRegionsCuboid.values().forEach(GenericMarker::deleteMarker);
-        allRegionsSphere.values().forEach(GenericMarker::deleteMarker);
-        allRegionsPolyline.values().forEach(GenericMarker::deleteMarker);
-
-        allRegionsCuboid.clear();
-        allRegionsCuboid = newRegionsCuboid;
-        allRegionsSphere.clear();
-        allRegionsSphere = newRegionsSphere;
-        allRegionsPolyline.clear();
-        allRegionsPolyline = newRegionsPolyline;
     }
 
-    public void createRegionMarkerCuboid(World world, Region region, Map<String, AreaMarker> regionsMap, Selection selection) {
+    public void cuboidMarker(World world, Region region, Selection selection) {
         if (region.getName().equals("Global")) return;
-
         final String markerId = "Region_" + region.getUuid();
         final String worldName = world.getName();
         XYZ a = null;
@@ -152,57 +117,40 @@ public class RegionsManager {
         x[3] = higherBounds.getX() + 1.0;
         z[3] = lowerBounds.getZ();
 
-        AreaMarker marker = allRegionsCuboid.remove(markerId);
+        AreaMarker found = markerSet.findAreaMarker(markerId);
+        AreaMarker marker = found != null ? found : markerSet.createAreaMarker(markerId, region.getName(), false, worldName, x, z, false);
         if (marker == null) {
-            marker = markerSet.createAreaMarker(markerId, region.getName(), false, worldName, x, z, false);
-            if (marker == null) return;
-        }else {
-            marker.setCornerLocations(x, z);
-            marker.setLabel(region.getName());
+            AddonMain.log("Marker: " + markerId + " - was null?");
+            return;
         }
+        marker.setCornerLocations(x, z);
+        marker.setLabel(region.getName());
+
         if (settings.isUse3D()) marker.setRangeY(higherBounds.getY() + 1.0, lowerBounds.getY());
-
-        setMarkerCuboidStyle(marker);
-
-        marker.setDescription(formatInfoWindow(region, selection));
-
-        regionsMap.put(markerId, marker);
+        cuboidStyle(marker);
+        marker.setDescription(infoWindow(region, selection));
     }
 
-    public void createRegionMarkerCircle(World world, Region region, Map<String, CircleMarker> regionsMap, SphereSelection selection) {
+    public void circleMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-
         final String markerId = "Region_" + region.getUuid();
         final String worldName = world.getName();
-        CircleMarker marker = allRegionsSphere.remove(markerId);
+        CircleMarker found = markerSet.findCircleMarker(markerId);
+        CircleMarker marker = found != null ? found : markerSet.createCircleMarker(markerId, region.getName(), false, worldName, selection.getCenter().getX(), selection.getCenter().getY(), selection.getCenter().getZ(), selection.getRadius() + 1.0, selection.getRadius() + 1.0, false);
         if (marker == null) {
-            marker = markerSet.createCircleMarker(
-                    markerId,
-                    region.getName(),
-                    false,
-                    worldName,
-                    selection.getCenter().getX(),
-                    selection.getCenter().getY(),
-                    selection.getCenter().getZ(),
-                    selection.getRadius() + 1.0,
-                    selection.getRadius() + 1.0,
-                    false);
-            if (marker == null) return;
-        }else {
-            marker.setRadius(selection.getRadius() + 1.0, selection.getRadius() + 1.0);
-            marker.setCenter(worldName, selection.getCenter().getX(), selection.getCenter().getY(), selection.getCenter().getZ());
-            marker.setLabel(region.getName());
+            AddonMain.log("Marker: " + markerId + " - was null?");
+            return;
         }
-        setMarkerCircleStyle(marker);
+        marker.setRadius(selection.getRadius() + 1.0, selection.getRadius() + 1.0);
+        marker.setCenter(worldName, selection.getCenter().getX(), selection.getCenter().getY(), selection.getCenter().getZ());
+        marker.setLabel(region.getName());
+        circleStyle(marker);
 
-        marker.setDescription(formatInfoWindow(region, selection));
-
-        regionsMap.put(markerId, marker);
+        marker.setDescription(infoWindow(region, selection));
     }
 
-    public void createRegionMarkerSphere(World world, Region region, Map<String, PolyLineMarker> regionsMap, SphereSelection selection) {
+    public void sphereMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-
         final String markerId = "Region_" + region.getUuid();
         final String worldName = world.getName();
         final int latSegments = 23; // Number of horizontal slices (latitude)
@@ -212,20 +160,18 @@ public class RegionsManager {
         final double centerY = selection.getCenter().getY();
         final double centerZ = selection.getCenter().getZ();
         CornerLocations calculation = calculateLocations(latSegments, lonSegments, centerX, centerY, centerZ, radius);
-        PolyLineMarker marker = regionsMap.remove(markerId);
+        PolyLineMarker found = markerSet.findPolyLineMarker(markerId);
+        PolyLineMarker marker = found != null ? found : markerSet.createPolyLineMarker(markerId, region.getName(), false, worldName, calculation.x, calculation.y, calculation.z, false);
         if (marker == null) {
-            marker = markerSet.createPolyLineMarker(markerId, region.getName(), false, worldName, calculation.x, calculation.y, calculation.z, false);
-            if (marker == null) return;
-        }else {
-            marker.setCornerLocations(calculation.x, calculation.y, calculation.z);
-            marker.setLabel(region.getName());
+            AddonMain.log("Marker: " + markerId + " - was null?");
+            return;
         }
-        // Apply styling and description
-        setMarkerLineStyle(marker);
-        marker.setDescription(formatInfoWindow(region, selection));
-        regionsMap.put(markerId, marker);
-    }
 
+        marker.setLabel(region.getName());
+        // Apply styling and description
+        polyLineStyle(marker);
+        marker.setDescription(infoWindow(region, selection));
+    }
 
     private record CornerLocations(double[] x, double[] y, double[] z) {
     }
@@ -270,7 +216,7 @@ public class RegionsManager {
     }
 
 
-    private void setMarkerLineStyle(PolyLineMarker marker) {
+    private void polyLineStyle(PolyLineMarker marker) {
         int lineColor = 0xFF0000;
 
         try {
@@ -285,26 +231,7 @@ public class RegionsManager {
         marker.setLineStyle(lineWeight, lineOpacity, lineColor);
     }
 
-    private void setMarkerCircleStyle(CircleMarker marker) {
-        int lineColor = 0xFF0000;
-        int fillColor = 0xFF0000;
-
-        try {
-            lineColor = ColorUtil.hex2RGB(settings.getLineColor()).getRGB();
-            fillColor = ColorUtil.hex2RGB(settings.getFillColor()).getRGB();
-        } catch (Exception ex) {
-            AddonMain.log("&cInvalid style color specified. Defaulting to red!");
-        }
-
-        int lineWeight = settings.getWeight();
-        double lineOpacity = settings.getLineOpacity();
-        double fillOpacity = settings.getFillOpacity();
-
-        marker.setLineStyle(lineWeight, lineOpacity, lineColor);
-        marker.setFillStyle(fillOpacity, fillColor);
-    }
-
-    private void setMarkerCuboidStyle(AreaMarker marker) {
+    private void circleStyle(CircleMarker marker) {
         int lineColor = 0xFF0000;
         int fillColor = 0xFF0000;
 
@@ -323,14 +250,59 @@ public class RegionsManager {
         marker.setFillStyle(fillOpacity, fillColor);
     }
 
-    private String formatInfoWindow(Region region, Selection selection) {
-        return "<div class=\"regioninfo\">" +
-                "<center>" +
-                "<div class=\"infowindow\">" +
-                "<span style=\"font-weight:bold;\">" + region.getName() + "</span><br/>" +
-                (selection instanceof CuboidSelection || selection instanceof ExpandVertSelection ? "Blocks: " + selection.getBlockSize() : "Radius: " + ((SphereSelection) selection).getRadius()) +
-                "</div>" +
-                "</center>" +
-                "</div>";
+    private void cuboidStyle(AreaMarker marker) {
+        int lineColor = 0xFF0000;
+        int fillColor = 0xFF0000;
+
+        try {
+            lineColor = ColorUtil.hex2RGB(settings.getLineColor()).getRGB();
+            fillColor = ColorUtil.hex2RGB(settings.getFillColor()).getRGB();
+        } catch (Exception ex) {
+            AddonMain.log("&cInvalid style color specified. Defaulting to red!");
+        }
+
+        int lineWeight = settings.getWeight();
+        double lineOpacity = settings.getLineOpacity();
+        double fillOpacity = settings.getFillOpacity();
+
+        marker.setLineStyle(lineWeight, lineOpacity, lineColor);
+        marker.setFillStyle(fillOpacity, fillColor);
+    }
+
+    private String infoWindow(Region region, Selection selection) {
+        String html = """
+                <div class="regioninfo">
+                    <center>
+                        <div class="infowindow">
+                            <span style="font-weight:bold;"> {regionName} </span><br/>
+                            {info}
+                        </div>
+                    </center>
+                </div>
+                """;
+
+        html = html.replace("{regionName}", region.getName());
+
+        StringBuilder info = new StringBuilder();
+        info.append("Blocks: " + selection.getBlockSize() + "\n");
+        XYZ center = selection.getCenter();
+        info.append("Center: " + center.getX() + "x " + center.getY() + "y " + center.getZ() + "z");
+        if (selection instanceof SphereSelection sec) {
+            info.append("Radius: " + sec.getRadius());
+        }
+        if (selection instanceof CuboidSelection sec) {
+            XYZ a = sec.getA();
+            XYZ b = sec.getB();
+            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z\n");
+            info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
+        }
+        if (selection instanceof ExpandVertSelection sec) {
+            XYZ a = sec.getA();
+            XYZ b = sec.getB();
+            info.append("XYZ 1: " + a.getX() + "x " + a.getY() + "y " + a.getZ() + "z\n");
+            info.append("XYZ 2: " + b.getX() + "x " + b.getY() + "y " + b.getZ() + "z");
+        }
+        html = html.replace("{info}", info);
+        return html;
     }
 }

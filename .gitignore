@@ -43,3 +43,5 @@ bin/
 /gradle/
 /.idea/
 /gradle/wrapper/
+/.idea/
+/.idea/gradle.xml

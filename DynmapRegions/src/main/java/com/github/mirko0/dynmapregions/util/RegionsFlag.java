@@ -1,5 +1,6 @@
-package com.github.mirko0.dynmapregions;
+package com.github.mirko0.dynmapregions.util;
 
+import com.github.mirko0.dynmapregions.AddonMain;
 import me.TechsCode.UltraRegions.UltraRegions;
 import me.TechsCode.UltraRegions.base.item.XMaterial;
 import me.TechsCode.UltraRegions.flags.Flag;

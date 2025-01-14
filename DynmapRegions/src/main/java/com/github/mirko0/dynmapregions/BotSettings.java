@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class BotSettings {
 
-    private int refreshTimeInTicks;
     private int refreshTimeInMinutes;
     private String layerName;
     private String lineColor;
