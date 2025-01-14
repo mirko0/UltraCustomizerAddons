@@ -45,10 +45,10 @@ public class ChannelMessageConstructor extends Constructor {
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("user", "Discord User", QDataTypes.DISCORD_USER, elementInfo),
-                new OutcomingVariable("member", "Server Member", QDataTypes.DISCORD_MEMBER, elementInfo),
-                new OutcomingVariable("channel", "Message Channel",QDataTypes.MESSAGE_CHANNEL, elementInfo),
-                new OutcomingVariable("guild", "Discord Server", QDataTypes.DISCORD_GUILD, elementInfo),
+                new OutcomingVariable("user", "Author", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("member", "Member", QDataTypes.DISCORD_MEMBER, elementInfo),
+                new OutcomingVariable("channel", "Channel",QDataTypes.MESSAGE_CHANNEL, elementInfo),
+                new OutcomingVariable("guild", "Server", QDataTypes.DISCORD_GUILD, elementInfo),
                 new OutcomingVariable("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
         };
     }

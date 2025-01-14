@@ -45,7 +45,7 @@ public class PrivateMessageConstructor extends Constructor {
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("user", "Discord User", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("user", "Author", QDataTypes.DISCORD_USER, elementInfo),
                 new OutcomingVariable("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
         };
     }
