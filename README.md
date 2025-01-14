@@ -1,5 +1,5 @@
 <h1 align="center"> 
-UltraCustomizerAddons
+UltraAddons
 </h1>
   <p align="center">
    <img alt="UltraAdditions" src="https://i.imgur.com/aafG08r.png">
@@ -13,11 +13,26 @@ UltraCustomizerAddons
 
 
 <h2 align="center"> 
+UltraCustomizer
+</h2>
+  <p align="center">
+   This repository features mostly addons made for UltraCustomizer from simple listeners for shift right-clicking to addons with custom data types allowing you to start and control a discord bot all from in game GUIs
+  </p>
+
+<h2 align="center"> 
+UltraRegions
+</h2>
+  <p align="center">
+    Currently there is a single UltraRegions addon used for displaying regions on Dynmap web interface. The addon is demonstrating how you can create a main class and build from there.
+  </p>
+
+
+<h3 align="center"> 
 Show your support
-</h1>
+</h3>
   <p align="center">
    <span>If this project helped you give it a ⭐️!</span>
    <br />
-   <img src="https://img.shields.io/github/stars/mirko0/UltraCustomizerAddons">
+   <img src="https://img.shields.io/github/stars/mirko0/UltraAddons">
   </p>
 
