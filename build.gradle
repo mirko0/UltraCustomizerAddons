@@ -11,6 +11,7 @@ repositories {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
     }
+    maven { url 'https://repo.bluecolored.de/releases' }
 }
 
 dependencies {
@@ -35,6 +36,9 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    repositories {
+        maven { url 'https://repo.bluecolored.de/releases' }
+    }
     dependencies {
         compileOnly files(project(":").file("libs\\UltraCustomizer.jar"))
 //        compileOnly files(project(":").file("libs\\original.jar"))
