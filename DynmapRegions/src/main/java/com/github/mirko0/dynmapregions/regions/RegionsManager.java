@@ -66,39 +66,52 @@ public class RegionsManager {
 
     public void update() {
         HashMap<World, Region[]> regions = UltraRegions.getAPI().getWorlds().get().stream().collect(Collectors.toMap(ManagedWorld::getBukkitWorld, ManagedWorld::getRegions, (a, b) -> b, HashMap::new));
-        if (!regions.isEmpty()) {
-            for (Map.Entry<World, Region[]> r : regions.entrySet()) {
-                for (Region region : r.getValue()) {
-                    if (region == null) continue;
-                    if (region.getName() == null) continue;
-                    if (region.getName().equals("Global")) continue;
-                    for (Object selection : region.getSelectionList().getList()) {
-                        if (selection instanceof CuboidSelection found) {
-                            // CUBE REGIONS
-                            cuboidMarker(r.getKey(), region, found);
-                        }else if (selection instanceof SphereSelection found) {
-                            // SPHERE REGIONS
-                            if (settings.isUse3D())
-                                sphereMarker(r.getKey(), region, found);
-                            else circleMarker(r.getKey(), region, found);
-                        }else if (selection instanceof ExpandVertSelection found) {
-                            // VERTICAL REGIONS
-                            cuboidMarker(r.getKey(), region, found);
-                        }
+        if (regions.isEmpty()) return;
+
+        for (Map.Entry<World, Region[]> r : regions.entrySet()) {
+            for (Region region : r.getValue()) {
+                if (region == null) continue;
+                if (region.getName() == null) continue;
+                if (region.getName().equals("Global")) continue;
+                for (Object selection : region.getSelectionList().getList()) {
+                    if (selection instanceof CuboidSelection found) {
+                        // CUBE REGIONS
+                        cuboidMarker(r.getKey(), region, found);
+                    }else if (selection instanceof SphereSelection found) {
+                        // SPHERE REGIONS
+                        if (settings.isUse3D())
+                            sphereMarker(r.getKey(), region, found);
+                        else circleMarker(r.getKey(), region, found);
+                    }else if (selection instanceof ExpandVertSelection found) {
+                        // VERTICAL REGIONS
+                        cuboidMarker(r.getKey(), region, found);
                     }
                 }
             }
         }
+        if (oldIds.isEmpty()) return;
+        for (IdData oldId : oldIds) {
+            if (newIds.stream().anyMatch(idData -> idData.id.equals(oldId.id))) continue;
+            markerSet.findMarker(oldId.id).deleteMarker();
+        }
     }
 
-    public String regionId(Region region, Selection selection) {
+    private record IdData(String id, String worldName) {
+    }
+
+    private List<IdData> oldIds = new ArrayList<>();
+    private List<IdData> newIds = new ArrayList<>();
+
+    public String regionId(Region region, Selection selection, World world) {
         XYZ center = selection.getCenter();
-        return "Region_" + region.getUuid() + "_" + center.getX() + center.getY() + center.getZ() + selection.getBlockSize();
+        String id = "Region_" + region.getUuid() + "_" + center.getX() + center.getY() + center.getZ() + selection.getBlockSize();
+        newIds.add(new IdData(id, world.getName()));
+        return id;
     }
 
     public void cuboidMarker(World world, Region region, Selection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = regionId(region, selection);
+        final String markerId = regionId(region, selection, world);
         final String worldName = world.getName();
         XYZ a = null;
         XYZ b = null;
@@ -142,7 +155,7 @@ public class RegionsManager {
 
     public void circleMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = regionId(region, selection);
+        final String markerId = regionId(region, selection, world);
         final String worldName = world.getName();
         CircleMarker found = markerSet.findCircleMarker(markerId);
         CircleMarker marker = found != null ? found : markerSet.createCircleMarker(markerId, region.getName(), false, worldName, selection.getCenter().getX(), selection.getCenter().getY(), selection.getCenter().getZ(), selection.getRadius() + 1.0, selection.getRadius() + 1.0, false);
@@ -160,7 +173,7 @@ public class RegionsManager {
 
     public void sphereMarker(World world, Region region, SphereSelection selection) {
         if (region.getName().equals("Global")) return;
-        final String markerId = regionId(region, selection);
+        final String markerId = regionId(region, selection, world);
         final String worldName = world.getName();
         final double radius = selection.getRadius();
         final double centerX = selection.getCenter().getX();
