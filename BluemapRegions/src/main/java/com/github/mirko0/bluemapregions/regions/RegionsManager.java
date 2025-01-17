@@ -31,7 +31,7 @@ public class RegionsManager {
 
     private final BotSettings settings;
     private static final String MARKER_SET_ID = "ultraregions";
-    private static final String LABEL = "Regions";
+    private final String label;
     private final Color fillColor;
     private final Color lineColor;
 
@@ -40,10 +40,11 @@ public class RegionsManager {
 
     public RegionsManager(AddonMain addonMain) {
         this.settings = addonMain.getSettings();
+        this.label = settings.getLayerName();
         java.awt.Color color = ColorUtil.hex2RGB(settings.getLineColor());
         java.awt.Color fill = ColorUtil.hex2RGB(settings.getFillColor());
         fillColor = (new Color(fill.getRed(), fill.getGreen(), fill.getBlue(), 0.3f));
-        lineColor = (new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.3f));
+        lineColor = (new Color(color.getRed(), color.getGreen(), color.getBlue()));
 
         BlueMapAPI.getInstance().ifPresent(this::start);
         BlueMapAPI.onEnable(this::start);
@@ -94,7 +95,6 @@ public class RegionsManager {
             if (markerSet == null) continue;
             markerSet.getMarkers().remove(oldId.id);
         }
-
     }
 
     private record IdData(String id, String worldName){}
@@ -105,7 +105,7 @@ public class RegionsManager {
 
     private void picker(World world, Region region, Object selection) {
         if (!worldSets.containsKey(world.getName())) {
-            final MarkerSet markerSet = MarkerSet.builder().label(LABEL).build();
+            final MarkerSet markerSet = MarkerSet.builder().label(label).build();
             api.getWorld(world.getName())
                     .map(BlueMapWorld::getMaps)
                     .ifPresent(maps -> maps.forEach(map -> map.getMarkerSets().put(MARKER_SET_ID, markerSet)));
@@ -159,6 +159,7 @@ public class RegionsManager {
                 .shape(rect, bottom.getBlockY(), top.getBlockY() + fixPosY)
                 .label(region.getName())
                 .lineColor(lineColor)
+                .fillColor(fillColor)
                 .lineWidth(3)
                 .depthTestEnabled(false)
                 .detail(infoWindow(region, selection)).build();
@@ -180,6 +181,7 @@ public class RegionsManager {
                 .shape(circle, (float) (center.getY() - (radius)), (float) (center.getY() + (radius)))
                 .label(region.getName())
                 .lineColor(lineColor)
+                .fillColor(fillColor)
                 .lineWidth(3)
                 .depthTestEnabled(false)
                 .detail(infoWindow(region, selection)).build();

@@ -79,14 +79,10 @@ public class AddonMain implements Listener {
             String layerName = config.get("layer_name", "Regions").toString();
             String lineColor = config.get("line_color", ColorUtil.DefaultColors.BLUE.getHexCode()).toString();
             String fillColor = config.get("fill_color", ColorUtil.DefaultColors.GRAY.getHexCode()).toString();
-            int lineWeight = (int) config.get("line_weight", 1);
-            double lineOpacity = (double) config.get("line_opacity", 0.8);
-            double fillOpacity = (double) config.get("fill_opacity", 0.35);
-            boolean use3D = (boolean) config.get("use_3D", true);
 
             config.save(configFileO);
             this.configFile = config;
-            settings = new BotSettings(refreshTimeInTicks * 20 * 60, layerName, lineColor, fillColor, lineOpacity, fillOpacity, lineWeight, use3D);
+            settings = new BotSettings(refreshTimeInTicks * 20 * 60, layerName, lineColor, fillColor);
         } catch (IOException e) {
             UltraCustomizer.getInstance().log("Error while loading settings file");
             e.printStackTrace();
