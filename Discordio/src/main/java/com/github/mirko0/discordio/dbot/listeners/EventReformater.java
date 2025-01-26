@@ -1,12 +1,13 @@
 package com.github.mirko0.discordio.dbot.listeners;
 
-import com.github.mirko0.discordio.AddonMain;
 import com.github.mirko0.discordio.dbot.BotMain;
-import com.github.mirko0.discordio.events.discord.*;
-import me.TechsCode.UltraCustomizer.UltraCustomizer;
+import com.github.mirko0.discordio.events.discord.guild.*;
+import com.github.mirko0.discordio.events.discord.user.DiscordPrivateMessageEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -48,5 +49,16 @@ public class EventReformater extends ListenerAdapter {
     @Override
     public void onGuildMemberRemove(@NotNull GuildMemberRemoveEvent event) {
         Bukkit.getPluginManager().callEvent(new DiscordGuildUserLeaveEvent(event));
+    }
+
+
+    @Override
+    public void onGuildBan(@NotNull GuildBanEvent event) {
+
+    }
+
+    @Override
+    public void onGuildUnban(@NotNull GuildUnbanEvent event) {
+
     }
 }

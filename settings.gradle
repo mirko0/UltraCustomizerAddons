@@ -18,4 +18,5 @@ include 'Discordio'
 include 'VariablesPlus'
 include 'DynmapRegions'
 include 'BluemapRegions'
+include 'CustomizerCommand'
 

@@ -1,14 +1,19 @@
-package com.github.mirko0.discordio.customizer.constructors;
+package com.github.mirko0.discordio.customizer.constructors.user;
 
 import com.github.mirko0.discordio.datatypes.QDataTypes;
-import com.github.mirko0.discordio.events.discord.DiscordMessageEvent;
+import com.github.mirko0.discordio.events.discord.guild.DiscordGuildUserLeaveEvent;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import org.bukkit.event.EventHandler;
 
-public class ChannelMessageConstructor extends Constructor {
-    public ChannelMessageConstructor(UltraCustomizer plugin) {
+import java.time.OffsetDateTime;
+
+public class MemberLeaveConstructor extends Constructor {
+    public MemberLeaveConstructor(UltraCustomizer plugin) {
         super(plugin);
     }
 
@@ -19,22 +24,22 @@ public class ChannelMessageConstructor extends Constructor {
 
     @Override
     public String getName() {
-        return "[D] Channel Message Received";
+        return "[D] User Leave Server";
     }
 
     @Override
     public String getInternalName() {
-        return "discordio-channel-message-r";
+        return "member-leave-guild";
     }
 
     @Override
     public XMaterial getMaterial() {
-        return XMaterial.WRITTEN_BOOK;
+        return XMaterial.BAT_SPAWN_EGG;
     }
 
     @Override
     public String[] getDescription() {
-        return new String[]{"Receive a message from a discord server channel."};
+        return new String[]{"Happens when user leaves a server."};
     }
 
     @Override
@@ -45,41 +50,39 @@ public class ChannelMessageConstructor extends Constructor {
     @Override
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
-                new OutcomingVariable("user", "Author", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("guild", "Left Server", QDataTypes.DISCORD_GUILD, elementInfo),
                 new OutcomingVariable("member", "Member", QDataTypes.DISCORD_MEMBER, elementInfo),
-                new OutcomingVariable("channel", "Channel",QDataTypes.MESSAGE_CHANNEL, elementInfo),
-                new OutcomingVariable("guild", "Server", QDataTypes.DISCORD_GUILD, elementInfo),
-                new OutcomingVariable("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
+                new OutcomingVariable("user", "User", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("time", "Leave Time", QDataTypes.OFFSET_DATE_TIME, elementInfo)
         };
     }
 
     @EventHandler
-    public void onMessage(DiscordMessageEvent event) {
+    public void onUserLeaveGuild(DiscordGuildUserLeaveEvent event) {
+        OffsetDateTime now = OffsetDateTime.now();
+        GuildMemberRemoveEvent dEvent = event.getDiscordEvent();
+        User user = dEvent.getUser();
+        Member member = dEvent.getMember();
         call(elementInfo -> {
             ScriptInstance instance = new ScriptInstance();
             getOutcomingVariables(elementInfo)[0].register(instance, new DataRequester() {
                 public Object request() {
-                    return event.getDiscordEvent().getAuthor();
+                    return dEvent.getGuild();
                 }
             });
             getOutcomingVariables(elementInfo)[1].register(instance, new DataRequester() {
                 public Object request() {
-                    return event.getDiscordEvent().getMember();
+                    return member;
                 }
             });
             getOutcomingVariables(elementInfo)[2].register(instance, new DataRequester() {
                 public Object request() {
-                    return event.getDiscordEvent().getChannel();
+                    return user;
                 }
             });
             getOutcomingVariables(elementInfo)[3].register(instance, new DataRequester() {
                 public Object request() {
-                    return event.getDiscordEvent().getGuild();
-                }
-            });
-            getOutcomingVariables(elementInfo)[4].register(instance, new DataRequester() {
-                public Object request() {
-                    return event.getDiscordEvent().getMessage();
+                    return now;
                 }
             });
             return instance;

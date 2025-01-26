@@ -18,10 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class InventoryEvents implements Listener {
 
     private AddonMain instance;
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onOpenInv(InventoryOpenEvent event) {
-
-    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemClick(InventoryClickEvent event) {

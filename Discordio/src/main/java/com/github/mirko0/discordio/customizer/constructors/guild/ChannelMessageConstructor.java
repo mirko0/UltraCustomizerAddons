@@ -1,14 +1,14 @@
-package com.github.mirko0.discordio.customizer.constructors;
+package com.github.mirko0.discordio.customizer.constructors.guild;
 
 import com.github.mirko0.discordio.datatypes.QDataTypes;
-import com.github.mirko0.discordio.events.discord.DiscordPrivateMessageEvent;
+import com.github.mirko0.discordio.events.discord.guild.DiscordMessageEvent;
 import me.TechsCode.UltraCustomizer.UltraCustomizer;
 import me.TechsCode.UltraCustomizer.base.item.XMaterial;
 import me.TechsCode.UltraCustomizer.scriptSystem.objects.*;
 import org.bukkit.event.EventHandler;
 
-public class PrivateMessageConstructor extends Constructor {
-    public PrivateMessageConstructor(UltraCustomizer plugin) {
+public class ChannelMessageConstructor extends Constructor {
+    public ChannelMessageConstructor(UltraCustomizer plugin) {
         super(plugin);
     }
 
@@ -19,12 +19,12 @@ public class PrivateMessageConstructor extends Constructor {
 
     @Override
     public String getName() {
-        return "[D] Private Message Received";
+        return "[D] Channel Message Received";
     }
 
     @Override
     public String getInternalName() {
-        return "discordio-private-message-r";
+        return "discordio-channel-message-r";
     }
 
     @Override
@@ -34,7 +34,7 @@ public class PrivateMessageConstructor extends Constructor {
 
     @Override
     public String[] getDescription() {
-        return new String[]{"Receive a direct message from user."};
+        return new String[]{"Receive a message from a discord server channel."};
     }
 
     @Override
@@ -46,12 +46,15 @@ public class PrivateMessageConstructor extends Constructor {
     public OutcomingVariable[] getOutcomingVariables(ElementInfo elementInfo) {
         return new OutcomingVariable[]{
                 new OutcomingVariable("user", "Author", QDataTypes.DISCORD_USER, elementInfo),
+                new OutcomingVariable("member", "Member", QDataTypes.DISCORD_MEMBER, elementInfo),
+                new OutcomingVariable("channel", "Channel",QDataTypes.MESSAGE_CHANNEL, elementInfo),
+                new OutcomingVariable("guild", "Server", QDataTypes.DISCORD_GUILD, elementInfo),
                 new OutcomingVariable("message", "Message", QDataTypes.DISCORD_MESSAGE, elementInfo)
         };
     }
 
     @EventHandler
-    public void onMessage(DiscordPrivateMessageEvent event) {
+    public void onMessage(DiscordMessageEvent event) {
         call(elementInfo -> {
             ScriptInstance instance = new ScriptInstance();
             getOutcomingVariables(elementInfo)[0].register(instance, new DataRequester() {
@@ -60,6 +63,21 @@ public class PrivateMessageConstructor extends Constructor {
                 }
             });
             getOutcomingVariables(elementInfo)[1].register(instance, new DataRequester() {
+                public Object request() {
+                    return event.getDiscordEvent().getMember();
+                }
+            });
+            getOutcomingVariables(elementInfo)[2].register(instance, new DataRequester() {
+                public Object request() {
+                    return event.getDiscordEvent().getChannel();
+                }
+            });
+            getOutcomingVariables(elementInfo)[3].register(instance, new DataRequester() {
+                public Object request() {
+                    return event.getDiscordEvent().getGuild();
+                }
+            });
+            getOutcomingVariables(elementInfo)[4].register(instance, new DataRequester() {
                 public Object request() {
                     return event.getDiscordEvent().getMessage();
                 }
